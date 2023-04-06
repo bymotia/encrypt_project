@@ -6,6 +6,11 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
+RED = "\033[1;31m"
+GREEN = "\033[1;32m"
+YELLOW = "\033[1;33m"
+RESET = "\033[0m"
+
 
 class RSAEncryption:
     def __init__(self):
@@ -53,11 +58,7 @@ class RSAEncryption:
         encryptor = cipher.encryptor()
         ciphertext = encryptor.update(plaintext) + encryptor.finalize()
 
-        print("Encrypting:")
-        print("aes_key:", aes_key)
-        print("aes_nonce:", aes_nonce)
-        print("ciphertext:", ciphertext)
-        print("tag:", encryptor.tag)
+        print(GREEN + "Encrypted" + RESET)
 
         return aes_key, aes_nonce, padding_size.to_bytes(2, byteorder='big') + ciphertext + encryptor.tag
 
@@ -104,7 +105,7 @@ class RSAEncryption:
             )
         )
 
-        print(f"Length of ciphertext_with_tag: {len(ciphertext_with_tag)}")
+        print(RED + "Decrypted" + RESET)
         plaintext = self._decrypt_aes_gcm(aes_key, aes_nonce, ciphertext_with_tag)
         with open(input_file, "wb") as f:
             f.write(plaintext)
