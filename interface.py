@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import json
 import os
-
+import RSA
 def check_credentials():
     entered_username = username_entry.get()
     entered_password = password_entry.get()
@@ -13,7 +13,6 @@ def check_credentials():
 
         if entered_username in user_data and user_data[entered_username] == entered_password:
             messagebox.showinfo("Login", "Login successful!")
-            # Do something after login, e.g., open a new window
         else:
             messagebox.showerror("Login", "Incorrect username or password. Please try again.")
     else:
