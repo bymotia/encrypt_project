@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import json
 import os
-import RSA
+
 def check_credentials():
     entered_username = username_entry.get()
     entered_password = password_entry.get()
