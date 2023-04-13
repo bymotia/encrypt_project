@@ -1,5 +1,4 @@
 import os
-import argparse
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives import hashes
@@ -13,17 +12,18 @@ RESET = "\033[0m"
 
 
 class RSAEncryption:
-    def __init__(self):
-        self.private_key, self.public_key = self.generate_rsa_key_pair()
+    def __init__(self, private_key, public_key):
+        self.private_key = private_key
+        self.public_key = public_key
 
-    def save_keys(self, public_key_file, private_key_file):
+    def save_keys(public_key_file, private_key_file, private_key, public_key):
         with open(public_key_file, "wb") as f:
-            f.write(self.public_key.public_bytes(
+            f.write(public_key.public_bytes(
                 encoding=serialization.Encoding.PEM,
                 format=serialization.PublicFormat.SubjectPublicKeyInfo,
             ))
         with open(private_key_file, "wb") as f:
-            f.write(self.private_key.private_bytes(
+            f.write(private_key.private_bytes(
                 encoding=serialization.Encoding.PEM,
                 format=serialization.PrivateFormat.PKCS8,
                 encryption_algorithm=serialization.NoEncryption(),
@@ -60,6 +60,7 @@ class RSAEncryption:
 
         print(GREEN + "Encrypted" + RESET)
 
+
         return aes_key, aes_nonce, padding_size.to_bytes(2, byteorder='big') + ciphertext + encryptor.tag
 
     def _decrypt_aes_gcm(self, aes_key, aes_nonce, ciphertext_with_tag):
@@ -87,6 +88,7 @@ class RSAEncryption:
         )
 
         encrypted_data = aes_nonce + encrypted_aes_key + ciphertext_with_tag
+
         with open(input_file, "wb") as f:
             f.write(encrypted_data)
 
@@ -110,25 +112,4 @@ class RSAEncryption:
         with open(input_file, "wb") as f:
             f.write(plaintext)
 
-
-def main():
-    parser = argparse.ArgumentParser(description="Encrypt or decrypt a file using RSA.")
-    parser.add_argument("mode", choices=["encrypt", "decrypt"], help="The operation mode: 'encrypt' or 'decrypt'.")
-    parser.add_argument("input_file", help="The input file to be processed.")
-    parser.add_argument("--public_key", help="Public key file", default="public_key.pem")
-    parser.add_argument("--private_key", help="Private key file", default="private_key.pem")
-    args = parser.parse_args()
-
-    rsa_encryption = RSAEncryption()
-
-    if args.mode == "encrypt":
-        rsa_encryption.encrypt_file(args.input_file)
-        rsa_encryption.save_keys(args.public_key, args.private_key)
-    elif args.mode == "decrypt":
-        rsa_encryption.private_key, rsa_encryption.public_key = RSAEncryption.load_keys(args.public_key, args.private_key)
-        rsa_encryption.decrypt_file(args.input_file)
-
-
-if __name__ == "__main__":
-    main()
 
