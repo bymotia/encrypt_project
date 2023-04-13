@@ -49,7 +49,7 @@ class RSAEncryption:
 
     def _encrypt_aes_gcm(self, plaintext):
         # Pad the plaintext to be at least 16 bytes
-        padding_size = max(16 - len(plaintext), 0)
+        padding_size = 16 - len(plaintext) % 16
         plaintext += b'\x00' * padding_size
 
         aes_key = os.urandom(32)  # 32 bytes = 256 bits
@@ -71,7 +71,10 @@ class RSAEncryption:
         padding_size = int.from_bytes(padding_size_bytes, byteorder='big')
         plaintext = decryptor.update(ciphertext) + decryptor.finalize_with_tag(tag)
 
-        # Remove padding from the decrypted data
+        # print(f"{RED}Padding size: {padding_size}{RESET}")
+        # print(f"{RED}Original plaintext: {plaintext.hex()}{RESET}")
+        # print(f"{RED}Unpadded plaintext: {plaintext[:-padding_size].hex()}{RESET}")
+
         return plaintext[:-padding_size]
     def encrypt_file(self, input_file):
         with open(input_file, "rb") as f:
