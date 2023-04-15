@@ -3,6 +3,7 @@ from tkinter import messagebox
 import json
 import os
 
+
 def check_credentials():
     entered_username = username_entry.get()
     entered_password = password_entry.get()
@@ -17,6 +18,7 @@ def check_credentials():
             messagebox.showerror("Login", "Incorrect username or password. Please try again.")
     else:
         messagebox.showerror("Login", "No registered users found. Please register first.")
+
 
 def register_user():
     new_username = new_username_entry.get()
@@ -40,6 +42,7 @@ def register_user():
             json.dump(user_data, file)
         messagebox.showinfo("Registration", "Registration successful! You can now log in.")
         register_window.destroy()
+
 
 def open_registration_window():
     global register_window, new_username_entry, new_password_entry
