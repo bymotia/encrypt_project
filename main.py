@@ -1,6 +1,7 @@
-import argparse
 import os
+import argparse
 from rsa_encryption import RSAEncryption
+
 
 def main():
     parser = argparse.ArgumentParser(description="Encrypt or decrypt a file using RSA.")
@@ -30,6 +31,7 @@ def main():
         private_key, public_key = RSAEncryption.load_keys(public_key_path, private_key_path)
         rsa_encryption = RSAEncryption(private_key, public_key)
         rsa_encryption.decrypt_file(args.input_file)
+
 
 if __name__ == "__main__":
     main()
