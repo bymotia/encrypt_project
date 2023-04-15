@@ -66,6 +66,7 @@ def open_registration_window():
     register_button = tk.Button(register_frame, text="Register", command=register_user)
     register_button.grid(row=2, columnspan=2, pady=10)
 
+
 # Create the main window
 root = tk.Tk()
 root.title("Login")

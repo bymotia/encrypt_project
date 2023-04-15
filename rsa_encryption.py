@@ -1,4 +1,5 @@
 import os
+import argparse
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives import hashes
@@ -60,13 +61,13 @@ class RSAEncryption:
 
         print(GREEN + "Encrypted" + RESET)
 
-
         return aes_key, aes_nonce, padding_size.to_bytes(2, byteorder='big') + ciphertext + encryptor.tag
 
     def _decrypt_aes_gcm(self, aes_key, aes_nonce, ciphertext_with_tag):
         cipher = Cipher(algorithms.AES(aes_key), modes.GCM(aes_nonce), backend=default_backend())
         decryptor = cipher.decryptor()
-        padding_size_bytes, ciphertext, tag = ciphertext_with_tag[:2], ciphertext_with_tag[2:-16], ciphertext_with_tag[-16:]
+        padding_size_bytes, ciphertext, tag = ciphertext_with_tag[:2], ciphertext_with_tag[2:-16], \
+            ciphertext_with_tag[-16:]
 
         padding_size = int.from_bytes(padding_size_bytes, byteorder='big')
         plaintext = decryptor.update(ciphertext) + decryptor.finalize_with_tag(tag)
@@ -76,6 +77,7 @@ class RSAEncryption:
         # print(f"{RED}Unpadded plaintext: {plaintext[:-padding_size].hex()}{RESET}")
 
         return plaintext[:-padding_size]
+
     def encrypt_file(self, input_file):
         with open(input_file, "rb") as f:
             plaintext = f.read()
@@ -114,5 +116,3 @@ class RSAEncryption:
         plaintext = self._decrypt_aes_gcm(aes_key, aes_nonce, ciphertext_with_tag)
         with open(input_file, "wb") as f:
             f.write(plaintext)
-
-
