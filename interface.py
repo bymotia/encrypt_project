@@ -4,12 +4,22 @@ import json
 import os
 
 
-def check_credentials():
+def get_user_data_path():
+    user_dir = "users"
+    if not os.path.exists(user_dir):
+        os.makedirs(user_dir)
+
+    return os.path.join(user_dir, "users.json")
+
+
+def check_credentials(username_entry, password_entry):
     entered_username = username_entry.get()
     entered_password = password_entry.get()
 
-    if os.path.exists("users.json"):
-        with open("users.json", "r") as file:
+    user_data_path = get_user_data_path()
+
+    if os.path.exists(user_data_path):
+        with open(user_data_path, "r") as file:
             user_data = json.load(file)
 
         if entered_username in user_data and user_data[entered_username] == entered_password:
@@ -20,7 +30,7 @@ def check_credentials():
         messagebox.showerror("Login", "No registered users found. Please register first.")
 
 
-def register_user():
+def register_user(new_username_entry, new_password_entry):
     new_username = new_username_entry.get()
     new_password = new_password_entry.get()
 
@@ -29,22 +39,23 @@ def register_user():
         return
 
     user_data = {}
+    user_data_path = get_user_data_path()
 
-    if os.path.exists("users.json"):
-        with open("users.json", "r") as file:
+    if os.path.exists(user_data_path):
+        with open(user_data_path, "r") as file:
             user_data = json.load(file)
 
     if new_username in user_data:
         messagebox.showerror("Registration", "This username is already taken.")
     else:
         user_data[new_username] = new_password
-        with open("users.json", "w") as file:
+        with open(user_data_path, "w") as file:
             json.dump(user_data, file)
         messagebox.showinfo("Registration", "Registration successful! You can now log in.")
         register_window.destroy()
 
 
-def open_registration_window():
+def open_registration_window(username_entry, password_entry):
     global register_window, new_username_entry, new_password_entry
 
     register_window = tk.Toplevel(root)
@@ -63,37 +74,48 @@ def open_registration_window():
     new_password_entry = tk.Entry(register_frame, show="*")
     new_password_entry.grid(row=1, column=1)
 
-    register_button = tk.Button(register_frame, text="Register", command=register_user)
+    register_button = tk.Button(register_frame, text="Register",
+                                command=lambda: register_user(new_username_entry, new_password_entry))
     register_button.grid(row=2, columnspan=2, pady=10)
 
 
-# Create the main window
-root = tk.Tk()
-root.title("Login")
+def create_login_frame(parent):
+    frame = tk.Frame(parent)
+    frame.pack(padx=10, pady=10)
 
-# Create a frame for the login form
-frame = tk.Frame(root)
-frame.pack(padx=10, pady=10)
+    username_label, username_entry = create_label_and_entry(frame, "Username:", 0)
+    password_label, password_entry = create_label_and_entry(frame, "Password:", 1, show="*")
 
-# Create the username label and entry
-username_label = tk.Label(frame, text="Username:")
-username_label.grid(row=0, column=0, sticky="w")
-username_entry = tk.Entry(frame)
-username_entry.grid(row=0, column=1)
+    login_button = tk.Button(frame, text="Login", command=lambda: check_credentials(username_entry, password_entry))
+    login_button.grid(row=2, column=0, pady=10)
 
-# Create the password label and entry
-password_label = tk.Label(frame, text="Password:")
-password_label.grid(row=1, column=0, sticky="w")
-password_entry = tk.Entry(frame, show="*")
-password_entry.grid(row=1, column=1)
+    register_button = tk.Button(frame, text="Register",
+                                command=lambda: open_registration_window(username_entry, password_entry))
+    register_button.grid(row=2, column=1, pady=10)
 
-# Create the login button
-login_button = tk.Button(frame, text="Login", command=check_credentials)
-login_button.grid(row=2, column=0, pady=10)
+    return frame
 
-# Create the register button
-register_button = tk.Button(frame, text="Register", command=open_registration_window)
-register_button.grid(row=2, column=1, pady=10)
+
+def create_label_and_entry(parent, text, row, **entry_kwargs):
+    label = tk.Label(parent, text=text)
+    label.grid(row=row, column=0, sticky="w")
+
+    entry = tk.Entry(parent, **entry_kwargs)
+    entry.grid(row=row, column=1)
+
+    return label, entry
+
+
+def create_main_window():
+    root = tk.Tk()
+    root.title("Login")
+
+    return root
+
+
+# Create the main window and login frame
+root = create_main_window()
+frame = create_login_frame(root)
 
 # Start the main loop
 root.mainloop()
