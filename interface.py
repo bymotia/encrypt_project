@@ -112,10 +112,7 @@ def create_main_window():
 
     return root
 
-
-# Create the main window and login frame
 root = create_main_window()
 frame = create_login_frame(root)
 
-# Start the main loop
 root.mainloop()

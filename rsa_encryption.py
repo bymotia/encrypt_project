@@ -17,7 +17,8 @@ class RSAEncryption:
         self.private_key = private_key
         self.public_key = public_key
 
-    def save_keys(public_key_file, private_key_file, private_key, public_key):
+    def save_keys(public_key_file, private_key_file, private_key,
+                  public_key):  # Saves the private and public keys to the specified file paths.
         with open(public_key_file, "wb") as f:
             f.write(public_key.public_bytes(
                 encoding=serialization.Encoding.PEM,
@@ -31,7 +32,8 @@ class RSAEncryption:
             ))
 
     @staticmethod
-    def load_keys(public_key_file, private_key_file):
+    def load_keys(public_key_file,
+                  private_key_file):  # loads the private and public keys from the specified file paths and returns a tuple containing the keys.
         with open(public_key_file, "rb") as f:
             public_key = serialization.load_pem_public_key(f.read(), backend=default_backend())
         with open(private_key_file, "rb") as f:
@@ -39,7 +41,7 @@ class RSAEncryption:
         return private_key, public_key
 
     @staticmethod
-    def generate_rsa_key_pair():
+    def generate_rsa_key_pair():  # Generates a pair of private and public keys using the RSA algorithm.
         private_key = rsa.generate_private_key(
             public_exponent=65537,
             key_size=2048,
